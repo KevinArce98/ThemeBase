@@ -1,12 +1,22 @@
 /*
 Theme Name: Tema Base
 Theme URI: www.unikomarcas.com
-Author URI: Kevin Arias
+Author: Kevin Arias
+Author URI: 
 Description: Tema base para crear más temas
 Version: 1.0
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Tags: base, mobile first, responsive, theme
+Text Domain: themebase
 */
 
-*{
+html{
+  box-sizing: border-box;
+}
+
+*, *:before, *:after{
+  box-sizing: inherit;
 	margin: 0px;
 	padding: 0px;
 }
@@ -75,7 +85,6 @@ a{
 
 .menu{
 	background:#006CB8;
-	margin-bottom: 1.25em;
 }
 .menu .navbar-menu{
 	padding: 1.25em 0em;
