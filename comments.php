@@ -1,60 +1,72 @@
 <?php
-	if ( post_password_required() ) : ?>
-
-<p class="nocomments container"><?php esc_html_e( 'This post is password protected. Enter the password to view comments.', 'Divi' ); ?></p>
-<?php
-		return;
-	endif;
+  if ( !empty($post->post_password) && $_COOKIE['wp-postpass_' . COOKIEHASH] != $post->post_password) :
 ?>
-<!-- You can start editing here. -->
+<p><?php _e('Enter your password to view comments.'); ?></p>
+<?php return; endif; ?>
 
-<section id="comment-wrap">
-<?php if ( have_comments() && ! empty( $comments_by_type['comment'] ) ) : ?>
-	<h1 id="comments" class="page_title"><?php comments_number( esc_html__( '0 Comments', 'Divi' ), esc_html__( '1 Comment', 'Divi' ), '% ' . esc_html__( 'Comments', 'Divi' ) ); ?></h1>
+<h2 id="comments"><?php comments_number(__('No Comments'), __('1 Comment'), __('% Comments')); ?>
+<?php if ( comments_open() ) : ?>
+	<a href="#postcomment" title="<?php _e("Leave a comment"); ?>">&raquo;</a>
 <?php endif; ?>
-	<?php if ( have_comments() ) : ?>
-		<?php if ( get_comment_pages_count() > 1 && get_option( 'page_comments' ) ) : // Are there comments to navigate through? ?>
-			<div class="comment_navigation_top clearfix">
-				<div class="nav-previous"><?php previous_comments_link( et_get_safe_localization( __( '<span class="meta-nav">&larr;</span> Older Comments', 'Divi' ) ) ); ?></div>
-				<div class="nav-next"><?php next_comments_link( et_get_safe_localization( __( 'Newer Comments <span class="meta-nav">&rarr;</span>', 'Divi' ) ) ); ?></div>
-			</div> <!-- .navigation -->
-		<?php endif; // check for comment navigation ?>
+</h2>
 
-		<?php if ( ! empty($comments_by_type['comment']) ) : ?>
-			<ol class="commentlist clearfix">
-				<?php wp_list_comments( array('type'=>'comment','callback'=>'et_custom_comments_display') ); ?>
-			</ol>
-		<?php endif; ?>
+<?php if ( $comments ) : ?>
+<ol id="commentlist">
 
-		<?php if ( get_comment_pages_count() > 1 && get_option( 'page_comments' ) ) : // Are there comments to navigate through? ?>
-			<div class="comment_navigation_bottom clearfix">
-				<div class="nav-previous"><?php previous_comments_link( et_get_safe_localization( __( '<span class="meta-nav">&larr;</span> Older Comments', 'Divi' ) ) ); ?></div>
-				<div class="nav-next"><?php next_comments_link( et_get_safe_localization( __( 'Newer Comments <span class="meta-nav">&rarr;</span>', 'Divi' ) ) ); ?></div>
-			</div> <!-- .navigation -->
-		<?php endif; // check for comment navigation ?>
+<?php foreach ($comments as $comment) : ?>
+	<li id="comment-<?php comment_ID() ?>">
+  <?php echo get_avatar( $comment, 32 ); ?>  
+	<?php comment_text() ?>
+	<p><cite><?php comment_type(__('Comment'), __('Trackback'), __('Pingback')); ?> <?php _e('by'); ?> <?php comment_author_link() ?> &#8212; <?php comment_date() ?> @ <a href="#comment-<?php comment_ID() ?>"><?php comment_time() ?></a></cite> <?php edit_comment_link(__("Edit This"), ' |'); ?></p>
+	</li>
 
-		<?php if ( ! empty($comments_by_type['pings']) ) : ?>
-			<div id="trackbacks">
-				<h3 id="trackbacks-title"><?php esc_html_e('Trackbacks/Pingbacks','Divi'); ?></h3>
-				<ol class="pinglist">
-					<?php wp_list_comments('type=pings&callback=et_list_pings'); ?>
-				</ol>
-			</div>
-		<?php endif; ?>
-	<?php else : // this is displayed if there are no comments so far ?>
-	   <div id="comment-section" class="nocomments">
-		  <?php if ('open' == $post->comment_status) : ?>
-			 <!-- If comments are open, but there are no comments. -->
+<?php endforeach; ?>
 
-		  <?php else : // comments are closed ?>
-			 <!-- If comments are closed. -->
+</ol>
 
-		  <?php endif; ?>
-	   </div>
-	<?php endif; ?>
-	<?php if ('open' == $post->comment_status) : ?>
-		<?php comment_form( array('label_submit' => esc_attr__( 'Submit Comment', 'Divi' ), 'title_reply' => '<span>' . esc_attr__( 'Enviar Comentario', 'Divi' ) . '</span>', 'title_reply_to' => esc_attr__( 'Leave a Reply to %s', 'Divi' ), 'class_submit' => 'submit et_pb_button' ) ); ?>
-	<?php else: ?>
+<?php else : // If there are no comments yet ?>
+	<p><?php _e('No comments yet.'); ?></p>
+<?php endif; ?>
 
-	<?php endif; // if you delete this the sky will fall on your head ?>
-</section>
+<?php if ( comments_open() ) : ?>
+<h2 id="postcomment"><?php _e('Leave a comment'); ?></h2>
+
+<?php if ( get_option('comment_registration') && !$user_ID ) : ?>
+<p><?php printf(__('You must be <a href="%s">logged in</a> to post a comment.'), get_option('siteurl')."/wp-login.php?redirect_to=".urlencode(get_permalink()));?></p>
+<?php else : ?>
+
+<form action="<?php echo get_option('siteurl'); ?>/wp-comments-post.php" method="post" id="commentform">
+
+<?php if ( $user_ID ) : ?>
+
+<p><?php printf(__('Logged in as %s.'), '<a href="'.get_option('siteurl').'/wp-admin/profile.php">'.$user_identity.'</a>'); ?> <a href="<?php echo get_option('siteurl'); ?>/wp-login.php?action=logout" title="<?php _e('Log out of this account') ?>"><?php _e('Logout &raquo;'); ?></a></p>
+
+<?php else : ?>
+
+<p><input type="text" name="author" id="author" value="<?php echo $comment_author; ?>" size="22" tabindex="1" />
+<label for="author"><small><?php _e('Name'); ?> <?php if ($req) _e('(required)'); ?></small></label></p>
+
+<p><input type="text" name="email" id="email" value="<?php echo $comment_author_email; ?>" size="22" tabindex="2" />
+<label for="email"><small><?php _e('Mail (will not be published)');?> <?php if ($req) _e('(required)'); ?></small></label></p>
+
+<p><input type="text" name="url" id="url" value="<?php echo $comment_author_url; ?>" size="22" tabindex="3" />
+<label for="url"><small><?php _e('Website'); ?></small></label></p>
+
+<?php endif; ?>
+
+<!--<p><small><strong>XHTML:</strong> <?php printf(__('You can use these tags: %s'), allowed_tags()); ?></small></p>-->
+
+<p><textarea name="comment" id="comment" cols="100%" rows="10" tabindex="4" class="form-control"></textarea></p>
+
+<p><input name="submit" type="submit" id="submit" tabindex="5" class="btn btn-success" value="<?php echo esc_html__(__('Submit Comment')); ?>" />
+<input type="hidden" name="comment_post_ID" value="<?php echo $id; ?>" />
+</p>
+<?php do_action('comment_form', $post->ID); ?>
+
+</form>
+
+<?php endif; // If registration required and not logged in ?>
+
+<?php else : // Comments are closed ?>
+<p><?php _e('Sorry, the comment form is closed at this time.'); ?></p>
+<?php endif; ?>

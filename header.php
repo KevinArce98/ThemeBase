@@ -23,7 +23,7 @@
 	<?php wp_head() ?>
 </head>
 <body>
-<div class="container-fluid bg-dark">
+	<div class="container-fluid bg-dark redes-sociales-contenedor">
 		<div class="container">
 			<div class="row pt-2 pb-2">
 				<div class="text-redes col-md-6 col-sm-12 ">
@@ -41,24 +41,33 @@
 	<div class="container-fluid menu">
 		<div class="container">
 			<div class="row">
-				<div class="logo col-md-3 col-sm-12">
+				<div class="logo col-md-3 col-sm-8">
 					<a href="<?php echo esc_url( home_url('/') ); ?>">
 						<img src="<?php bloginfo('template_url') ?>/img/logo.png" alt="logo-page">
 					</a>
 				</div>
-			    <div class="navbar-menu col-md-9 col-sm-12">
-				    <?php 
-				   		$args = array(
-				   			'theme_location' => 'menu-top',
-				   			'container' => false,
-				   			'menu-class' => '',
-				   			'items_wrap' => '<ul>%3$s</ul>'
-				   		);
+				<div class="col-sm-2" id="container-menu-mobile">
+					<div class="mobile-menu">
+						<a href="#" class="mobile"><i class="fa fa-bars" aria-hidden="true"></i></a>
+					</div>
+				</div>
+			   <div class="contenedor-principal col-md-9 col-sm-12">
+								   	
+	
+				   	<div class="navbar-menu">
+					    <?php 
+					   		$args = array(
+					   			'theme_location' => 'menu-top',
+					   			'container' => false,
+					   			'menu-class' => '',
+					   			'items_wrap' => '<ul>%3$s</ul>'
+					   		);
 
-				   		wp_nav_menu($args); 
+					   		wp_nav_menu($args); 
 
-				   	?>
-			    </div>
+					   	?>
+				    </div>
+			   </div>
 			</div>
 		</div>
 	</div>
